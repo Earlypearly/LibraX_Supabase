@@ -1,47 +1,42 @@
-const registerForm = document.getElementById('registerForm');
-const messageDiv = document.getElementById('message');
+// api/register.js
+import { createClient } from '@supabase/supabase-js';
 
-registerForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
+const SUPABASE_URL = 'https://kvavhykbqpndnaajbdqv.supabase.co';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-  messageDiv.className = 'message';
-  messageDiv.textContent = 'Creating your account...';
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const res = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
-    });
+    const { name, email, password } = req.body;
 
-    const text = await res.text();
-    console.log("Raw response:", text);
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = { error: text || "Invalid JSON response" };
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'All fields are required' });
     }
 
-    if (!res.ok) {
-      throw new Error(data.error || `Server error (${res.status})`);
+    // Check if user already exists
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already registered' });
     }
 
-    messageDiv.className = 'message success';
-    messageDiv.textContent = data.message || 'Registration successful!';
+    // Insert user
+    const { error } = await supabase
+      .from('users')
+      .insert([{ name, email, password }]);
 
-    // Redirect to login after success
-    setTimeout(() => {
-      window.location.href = 'index.html';
-    }, 1500);
+    if (error) throw error;
+
+    return res.status(201).json({ message: 'Registration successful!' });
   } catch (err) {
-    console.error("Register error:", err);
-    messageDiv.className = 'message error';
-    messageDiv.textContent = `❌ ${err.message}`;
+    console.error('Register error:', err);
+    return res.status(500).json({ error: err.message });
   }
-});
+}
