@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1 id="greeting">Welcome!</h1>
+    </div>
+
+    <script>
+        // Get query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+
+        // Display personalized greeting
+        const greeting = document.getElementById('greeting');
+        if (name) {
+            greeting.textContent = `Welcome, ${name}!`;
+        } else {
+            greeting.textContent = 'Welcome!';
+        }
+    </script>
+</body>
+</html>
