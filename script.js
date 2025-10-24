@@ -8,21 +8,18 @@ loginForm.addEventListener('submit', async (e) => {
   const password = document.getElementById('password').value.trim();
 
   messageDiv.className = 'message';
-  messageDiv.textContent = '';
+  messageDiv.textContent = 'Logging in...';
 
   try {
-        const res = await fetch('https://your-api.vercel.app/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-        });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'Login failed');
-    }
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
 
     const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
     messageDiv.className = 'message success';
     messageDiv.textContent = data.message;
 
