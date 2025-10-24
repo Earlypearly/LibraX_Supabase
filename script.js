@@ -11,11 +11,11 @@ loginForm.addEventListener('submit', async (e) => {
   messageDiv.textContent = '';
 
   try {
-    const res = await fetch('http://localhost:3000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
+        const res = await fetch('https://your-api.vercel.app/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        });
 
     if (!res.ok) {
       const err = await res.json();
