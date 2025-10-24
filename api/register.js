@@ -1,25 +1,47 @@
-// api/login.js
-import { createClient } from '@supabase/supabase-js';
+const registerForm = document.getElementById('registerForm');
+const messageDiv = document.getElementById('message');
 
-const SUPABASE_URL = 'https://kvavhykbqpndnaajbdqv.supabase.co';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY; // set in Vercel
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  messageDiv.className = 'message';
+  messageDiv.textContent = 'Creating your account...';
 
-  const { email, password } = req.body;
+  try {
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+    });
 
-  const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('email', email)
-    .eq('password', password)
-    .single();
+    const text = await res.text();
+    console.log("Raw response:", text);
 
-  if (error || !data)
-    return res.status(401).json({ error: 'Invalid email or password' });
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { error: text || "Invalid JSON response" };
+    }
 
-  res.json({ message: `Welcome, ${data.name}!` });
-}
+    if (!res.ok) {
+      throw new Error(data.error || `Server error (${res.status})`);
+    }
+
+    messageDiv.className = 'message success';
+    messageDiv.textContent = data.message || 'Registration successful!';
+
+    // Redirect to login after success
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 1500);
+  } catch (err) {
+    console.error("Register error:", err);
+    messageDiv.className = 'message error';
+    messageDiv.textContent = `❌ ${err.message}`;
+  }
+});
