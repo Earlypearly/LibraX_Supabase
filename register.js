@@ -35,7 +35,7 @@ registerForm.addEventListener('submit', async (e) => {
 
     // Redirect to login after 2s
     setTimeout(() => {
-      window.location.href = '/login.html';
+      window.location.href = '/index.html';
     }, 2000);
   } catch (err) {
     console.error('Register error:', err);
