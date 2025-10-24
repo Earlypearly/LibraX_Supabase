@@ -2,7 +2,7 @@ import express from 'express';
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://kvavhykbqpndnaajbdqv.supabase.co';
-const SUPABASE_SERVICE_KEY = 'your-service-role-or-secret-key'; // Keep secret
+const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2YXZoeWticXBuZG5hYWpiZHF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MDUxODQsImV4cCI6MjA3NjI4MTE4NH0.JIuhvuvZMsUW_Re1lq0A1UexpTGznyquthb0Q987Dkc'; // Keep secret
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
