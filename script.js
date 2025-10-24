@@ -2,7 +2,8 @@
 const SUPABASE_URL = 'https://kvavhykbqpndnaajbdqv.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2YXZoeWticXBuZG5hYWpiZHF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MDUxODQsImV4cCI6MjA3NjI4MTE4NH0.JIuhvuvZMsUW_Re1lq0A1UexpTGznyquthb0Q987Dkc';
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ✅ Correct Supabase client initialization
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Get form and message elements
 const loginForm = document.getElementById('loginForm');
