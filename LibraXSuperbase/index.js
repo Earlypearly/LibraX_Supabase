@@ -1,12 +1,21 @@
 import express from 'express';
+import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://kvavhykbqpndnaajbdqv.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2YXZoeWticXBuZG5hYWpiZHF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MDUxODQsImV4cCI6MjA3NjI4MTE4NH0.JIuhvuvZMsUW_Re1lq0A1UexpTGznyquthb0Q987Dkc'; // Keep secret
+const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2YXZoeWticXBuZG5hYWpiZHF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MDUxODQsImV4cCI6MjA3NjI4MTE4NH0.JIuhvuvZMsUW_Re1lq0A1UexpTGznyquthb0Q987Dkc';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 const app = express();
+
+// ✅ Enable CORS for your frontend domain
+app.use(cors({
+  origin: ['https://libra-x-supabase.vercel.app', 'http://localhost:5173'], // add dev domain if needed
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+}));
+
 app.use(express.json());
 
 app.post('/api/login', async (req, res) => {
@@ -19,9 +28,11 @@ app.post('/api/login', async (req, res) => {
     .eq('password', password)
     .single();
 
-  if (error || !data) return res.status(401).json({ error: 'Invalid credentials' });
+  if (error || !data) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
 
   res.json({ message: `Welcome, ${data.name}!` });
 });
 
-app.listen(3000, () => console.log('Server listening on port 3000'));
+app.listen(3000, () => console.log('✅ Server listening on port 3000'));
