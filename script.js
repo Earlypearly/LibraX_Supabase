@@ -1,10 +1,3 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const SUPABASE_URL = 'https://kvavhykbqpndnaajbdqv.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2YXZoeWticXBuZG5hYWpiZHF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MDUxODQsImV4cCI6MjA3NjI4MTE4NH0.JIuhvuvZMsUW_Re1lq0A1UexpTGznyquthb0Q987Dkc';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
 const loginForm = document.getElementById('loginForm');
 const messageDiv = document.getElementById('message');
 
@@ -18,28 +11,26 @@ loginForm.addEventListener('submit', async (e) => {
   messageDiv.textContent = '';
 
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', email)
-      .eq('password', password)
-      .single();
+    const res = await fetch('http://localhost:3000/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
 
-    if (error || !data) {
-      messageDiv.className = 'message error';
-      messageDiv.textContent = '❌ Invalid email or password';
-      return;
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Login failed');
     }
 
+    const data = await res.json();
     messageDiv.className = 'message success';
-    messageDiv.textContent = '✓ Login successful! Welcome ' + data.name;
+    messageDiv.textContent = data.message;
 
     setTimeout(() => {
-      window.location.href = `dashboard.html?name=${encodeURIComponent(data.name)}`;
+      window.location.href = `dashboard.html?name=${encodeURIComponent(email)}`;
     }, 1500);
   } catch (err) {
-    console.error('Error:', err);
     messageDiv.className = 'message error';
-    messageDiv.textContent = '⚠ An error occurred. Please try again.';
+    messageDiv.textContent = `❌ ${err.message}`;
   }
 });

@@ -1,35 +1,37 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-const SUPABASE_URL = 'https://kvavhykbqpndnaajbdqv.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2YXZoeWticXBuZG5hYWpiZHF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MDUxODQsImV4cCI6MjA3NjI4MTE4NH0.JIuhvuvZMsUW_Re1lq0A1UexpTGznyquthb0Q987Dkc';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
 const registerForm = document.getElementById('registerForm');
 const messageDiv = document.getElementById('message');
 
 registerForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
+  e.preventDefault();
 
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
 
-  messageDiv.className = 'message';
-  messageDiv.textContent = '';
+  messageDiv.className = 'message';
+  messageDiv.textContent = '';
 
-  const { data, error } = await supabase.from('users').insert([{ name, email, password }]);
+  try {
+    const response = await fetch('http://localhost:3000/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+    });
 
-  if (error) {
-    messageDiv.className = 'message error';
-    messageDiv.textContent = '❌ Registration failed: ' + error.message;
-    return;
-  }
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || 'Registration failed');
+    }
 
-  messageDiv.className = 'message success';
-  messageDiv.textContent = '✓ Registration successful! Redirecting to login...';
+    const data = await response.json();
+    messageDiv.className = 'message success';
+    messageDiv.textContent = `✓ ${data.message}`;
 
-  setTimeout(() => {
-    window.location.href = 'index.html'; // Redirect to login page
-  }, 1500);
+    setTimeout(() => {
+      window.location.href = 'index.html'; // redirect to login page
+    }, 1500);
+  } catch (err) {
+    messageDiv.className = 'message error';
+    messageDiv.textContent = `❌ ${err.message}`;
+  }
 });
