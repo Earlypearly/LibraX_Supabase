@@ -44,8 +44,10 @@ loginForm.addEventListener('submit', async (e) => {
         
         // Optional: Redirect after successful login
         setTimeout(() => {
-            window.location.href = 'dashboard.html'; // Change to your dashboard page
+            // Pass user's name as URL parameter to dashboard.html
+            window.location.href = `dashboard.html?name=${encodeURIComponent(data.name)}`;
         }, 1500);
+
         
     } catch (err) {
         console.error('Error:', err);
