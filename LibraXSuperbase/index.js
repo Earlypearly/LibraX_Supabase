@@ -11,10 +11,14 @@ const app = express();
 
 // ✅ Enable CORS for your frontend domain
 app.use(cors({
-  origin: ['https://libra-x-supabase.vercel.app', 'http://localhost:5173'], // add dev domain if needed
+  origin: [
+    'https://libra-x-supabase.vercel.app',
+    /\.vercel\.app$/  // allow all vercel preview URLs
+  ],
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
 }));
+
 
 app.use(express.json());
 
